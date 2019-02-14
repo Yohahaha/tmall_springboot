@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 
 @RestController
@@ -26,12 +25,12 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping("/categories")
-    public List<Category> list() throws Exception {
-        List<Category> categoryList = categoryService.list();
-        categoryList.forEach(category -> System.out.println(category));
-        return categoryList;
-    }
+//    @GetMapping("/categories")
+//    public List<Category> list() throws Exception {
+//        List<Category> categoryList = categoryService.list();
+//        categoryList.forEach(category -> System.out.println(category));
+//        return categoryList;
+//    }
 
     /**
      * 查询类别数据，以分页的方式返回
@@ -51,7 +50,6 @@ public class CategoryController {
      *
      * @param bean  类别信息
      * @param image 类别对应的图片
-     * @throws Exception
      */
     @PostMapping("/categories")
     public Object add(Category bean, MultipartFile image, HttpServletRequest request) throws Exception {
@@ -71,6 +69,10 @@ public class CategoryController {
         ImageIO.write(img, "jpg", file);
     }
 
+    /**
+     * 删除分类数据
+     * 请求从listCategory页面发出来的
+     */
     @DeleteMapping("/categories/{id}")
     public String delete(@PathVariable Integer id, HttpServletRequest request) throws Exception {
         categoryService.delete(id);
@@ -83,19 +85,27 @@ public class CategoryController {
         return null;
     }
 
+    /**
+     * 获取要修改的分类数据用于回显
+     * 请求从editCategory页面发出
+     */
     @GetMapping("/categories/{id}")
     public Category edit(@PathVariable Integer id) throws Exception {
         return categoryService.editById(id);
     }
 
+    /**
+     * 修改分类数据
+     * 请求从editCategory页面发出
+     */
     @PutMapping("/categories/{id}")
     public String update(Category bean, MultipartFile image, HttpServletRequest request, @PathVariable Integer id) throws Exception {
         //看起来似乎springMVC自动将id绑定到bean上了
 //        bean.setId(id);
 //        System.out.println(bean);
         categoryService.updateCategory(bean);
-        if(image!=null){
-            saveOrUpdateImageFile(bean,image,request);
+        if (image != null) {
+            saveOrUpdateImageFile(bean, image, request);
         }
         return null;
     }

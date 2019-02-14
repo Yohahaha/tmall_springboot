@@ -52,7 +52,7 @@
                     axios.post(url, formData).then(function (response) {
                         vue.list(0);//因为在显示的时候是倒序，所以查询首页后的第一条数据就是刚插入的数据
                         //请求成功后将vue对象中的属性恢复默认值，方便继续添加类别
-                        vue.bean = {id:0, name:'',hp:'0'};
+                        vue.bean = {id:0, name:''};
                         $("#categoryPic").val('');
                         vue.file = null;
                     });

@@ -69,4 +69,8 @@ public class CategoryService {
     public void updateCategory(Category category){
         categoryDAO.save(category);
     }
+
+    public Category get(int id) {
+        return categoryDAO.getOne(id);
+    }
 }
