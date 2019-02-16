@@ -25,4 +25,12 @@ public class AdminPageController {
     public String editProperty(){
         return "admin/editProperty";
     }
+    @GetMapping("/admin_product_list")
+    public String listProduct(){
+        return "admin/listProduct";
+    }
+    @GetMapping("/admin_product_edit")
+    public String editProduct(){
+        return "admin/editProduct";
+    }
 }
