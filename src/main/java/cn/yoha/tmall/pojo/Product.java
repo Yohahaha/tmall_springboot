@@ -30,6 +30,17 @@ public class Product {
     @JoinColumn(name = "cid")
     private Category category;
     private Date createDate;
+    @Transient
+    private ProductImage firstImg;
+    public ProductImage getFirstImg() {
+        return firstImg;
+    }
+
+    public void setFirstImg(ProductImage firstImg) {
+        this.firstImg = firstImg;
+    }
+
+
 
     @Override
     public String toString() {

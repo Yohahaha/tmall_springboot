@@ -1,6 +1,7 @@
 package cn.yoha.tmall.web;
 
 import cn.yoha.tmall.pojo.Product;
+import cn.yoha.tmall.service.ProductImageService;
 import cn.yoha.tmall.service.ProductService;
 import cn.yoha.tmall.util.Page4Navigator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,17 +12,21 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
-
+    @Autowired
+    private ProductImageService productImageService;
     /**
      * 展示某分类下的所有产品
      * 映射listProduct页面中的list方法
+     * 更新了对产品图片显示的支持
      */
     @GetMapping("/categories/{cid}/products")
     public Page4Navigator<Product> list(@PathVariable Integer cid,
                                         @RequestParam(value = "start", defaultValue = "0") Integer start,
                                         @RequestParam(value = "size", defaultValue = "5") Integer size) {
         start = start > 0 ? start : 0;
-        return productService.list(cid, start, size, 5);
+        Page4Navigator<Product> page = productService.list(cid, start, size, 5);
+        productImageService.setFirstImgs(page.getContent());
+        return page;
     }
 
     /**
