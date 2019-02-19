@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +34,10 @@ public class ProductImageController {
         Product product = (Product) productService.get(pid);
         //判断要展示的图片类型
         if (ProductImageService.TYPE_SINGLE.equals(type)) {
-            List<ProductImage> proImages = productImageService.listSingleProImages(product);
+            List<ProductImage> proImages = productImageService.listSingleProductImages(product);
             return proImages;
         } else if (ProductImageService.TYPE_DETAIL.equals(type)) {
-            List<ProductImage> proImages = productImageService.listDetailProImages(product);
+            List<ProductImage> proImages = productImageService.listDetailProductImages(product);
             return proImages;
         } else {
             return new ArrayList<>();
@@ -55,40 +56,42 @@ public class ProductImageController {
                                   MultipartFile image, HttpServletRequest request) throws Exception {
         //new一个产品图片类，对其添加属性
         ProductImage bean = new ProductImage();
-        Product product = (Product) productService.get(pid);
+        Product product =(Product) productService.get(pid);
         bean.setProduct(product);
         bean.setType(type);
+
         productImageService.add(bean);
-        //根据不同图片类型拼接存放图片的路径
         String folder = "img/";
-        if (ProductImageService.TYPE_SINGLE.equals(bean.getType())) {
-            folder += "proImgSingle";
-        } else {
-            folder += "proImgDetail";
+        if(ProductImageService.TYPE_SINGLE.equals(bean.getType())){
+            folder +="productSingle";
         }
-        File imgFolder = new File(request.getServletContext().getRealPath(folder));
-        File file = new File(imgFolder, bean.getId() + ".jpg");
-        if (!file.getParentFile().exists()) {
+        else{
+            folder +="productDetail";
+        }
+        File  imageFolder= new File(request.getServletContext().getRealPath(folder));
+        File file = new File(imageFolder,bean.getId()+".jpg");
+        String fileName = file.getName();
+        if(!file.getParentFile().exists())
             file.getParentFile().mkdirs();
+        try {
+            image.transferTo(file);
+            BufferedImage img = ImageUtil.change2jpg(file);
+            ImageIO.write(img, "jpg", file);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        image.transferTo(file);
-        BufferedImage bufferedImage = ImageUtil.change2jpg(file);
-        ImageIO.write(bufferedImage, "jpg", file);
-        //对于单一图片还要存储其不同尺寸的图片
-        if (ProductImageService.TYPE_SINGLE.equals(bean.getType())) {
-            String imgSmallFolder = request.getServletContext().getRealPath("img/proImgSingle/small");
-            String imgMiddleFolder = request.getServletContext().getRealPath("img/proImgSingle/middle");
-            File f_small = new File(imgSmallFolder, bean.getId() + ".jpg");
-            File f_middle = new File(imgMiddleFolder, bean.getId() + ".jpg");
-            if (!f_small.getParentFile().exists()) {
-                f_small.getParentFile().mkdirs();
-            }
-            if (!f_middle.getParentFile().exists()) {
-                f_middle.getParentFile().mkdirs();
-            }
+
+        if(ProductImageService.TYPE_SINGLE.equals(bean.getType())){
+            String imageFolder_small= request.getServletContext().getRealPath("img/productSingle_small");
+            String imageFolder_middle= request.getServletContext().getRealPath("img/productSingle_middle");
+            File f_small = new File(imageFolder_small, fileName);
+            File f_middle = new File(imageFolder_middle, fileName);
+            f_small.getParentFile().mkdirs();
+            f_middle.getParentFile().mkdirs();
             ImageUtil.resizeImage(file, 56, 56, f_small);
-            ImageUtil.resizeImage(file, 56, 56, f_middle);
+            ImageUtil.resizeImage(file, 217, 190, f_middle);
         }
+
         return bean;
     }
 
@@ -96,27 +99,30 @@ public class ProductImageController {
      * 删除产品图片
      */
     @DeleteMapping("/productImages/{id}")
-    public void delete(@PathVariable Integer id, HttpServletRequest request) throws Exception {
-        ProductImage bean = (ProductImage) productImageService.get(id);
+    public String delete(@PathVariable Integer id, HttpServletRequest request) throws Exception {
+        ProductImage bean = productImageService.get(id);
+        productImageService.delete(id);
+
         String folder = "img/";
-        if (ProductImageService.TYPE_SINGLE.equals(bean.getType())) {
-            folder += "proImgSingle";
-        } else {
-            folder += "proImgDetail";
-        }
-        File imgFolder = new File(request.getServletContext().getRealPath(folder));
-        File file = new File(imgFolder, bean.getId() + ".jpg");
+        if(ProductImageService.TYPE_SINGLE.equals(bean.getType()))
+            folder +="productSingle";
+        else
+            folder +="productDetail";
+
+        File  imageFolder= new File(request.getServletContext().getRealPath(folder));
+        File file = new File(imageFolder,bean.getId()+".jpg");
         String fileName = file.getName();
         file.delete();
-        if (ProductImageService.TYPE_SINGLE.equals(bean.getType())) {
-            String smallImgFolder = request.getServletContext().getRealPath("img/proImgSingle/small");
-            String middleImgFolder = request.getServletContext().getRealPath("img/proImgSingle/middle");
-            File sImg = new File(smallImgFolder, fileName);
-            File mImg = new File(middleImgFolder, fileName);
-            sImg.delete();
-            mImg.delete();
+        if(ProductImageService.TYPE_SINGLE.equals(bean.getType())){
+            String imageFolder_small= request.getServletContext().getRealPath("img/productSingle_small");
+            String imageFolder_middle= request.getServletContext().getRealPath("img/productSingle_middle");
+            File f_small = new File(imageFolder_small, fileName);
+            File f_middle = new File(imageFolder_middle, fileName);
+            f_small.delete();
+            f_middle.delete();
         }
-        productImageService.delete(id);
+
+        return null;
     }
 
 }

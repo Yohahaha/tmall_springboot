@@ -45,4 +45,14 @@ public class AdminPageController {
     public String listProductImage() {
         return "admin/listProductImage";
     }
+    //用户管理页面
+    @GetMapping("/admin_user_list")
+    public String listUser(){
+        return "admin/listUser";
+    }
+    @GetMapping(value="/admin_order_list")
+    public String listOrder(){
+        return "admin/listOrder";
+
+    }
 }

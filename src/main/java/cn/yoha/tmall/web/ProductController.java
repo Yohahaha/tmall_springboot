@@ -25,7 +25,7 @@ public class ProductController {
                                         @RequestParam(value = "size", defaultValue = "5") Integer size) {
         start = start > 0 ? start : 0;
         Page4Navigator<Product> page = productService.list(cid, start, size, 5);
-        productImageService.setFirstImgs(page.getContent());
+        productImageService.setFirstProdutImages(page.getContent());
         return page;
     }
 

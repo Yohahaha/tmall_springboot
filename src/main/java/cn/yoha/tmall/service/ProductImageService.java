@@ -9,53 +9,46 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ProductImageService {
-    public static String TYPE_SINGLE = "single";
-    public static String TYPE_DETAIL = "detail";
+public class ProductImageService   {
+
+    public static final String TYPE_SINGLE = "single";
+    public static final String TYPE_DETAIL = "detail";
+
     @Autowired
-    private ProductImageDAO productImageDAO;
+    ProductImageDAO productImageDAO;
 
     public void add(ProductImage bean) {
         productImageDAO.save(bean);
-    }
 
-    public Object get(Integer id) {
-        return productImageDAO.getOne(id);
     }
-
-    public void delete(Integer id) {
+    public void delete(int id) {
         productImageDAO.deleteById(id);
     }
 
-    /**
-     * 展示单一图片
-     */
-    public List<ProductImage> listSingleProImages(Product product) {
-        return productImageDAO.findByProductAndTypeOrderByIdDesc(product, TYPE_SINGLE);
+    public ProductImage get(int id) {
+        return productImageDAO.getOne(id);
     }
 
-    /**
-     * 展示详情图片
-     */
-    public List<ProductImage> listDetailProImages(Product product) {
+    public List<ProductImage> listSingleProductImages(Product product) {
+        return productImageDAO.findByProductAndTypeOrderByIdDesc(product, TYPE_SINGLE);
+    }
+    public List<ProductImage> listDetailProductImages(Product product) {
         return productImageDAO.findByProductAndTypeOrderByIdDesc(product, TYPE_DETAIL);
     }
 
-    private void setFirstImg(Product product) {
-        List<ProductImage> images = listSingleProImages(product);
-        if (!images.isEmpty()) {
-            product.setFirstImg(images.get(0));
-        } else {
-            product.setFirstImg(new ProductImage());
-        }
+    public void setFirstProdutImage(Product product) {
+        List<ProductImage> singleImages = listSingleProductImages(product);
+        if(!singleImages.isEmpty())
+            product.setFirstProductImage(singleImages.get(0));
+        else
+            product.setFirstProductImage(new ProductImage()); //这样做是考虑到产品还没有来得及设置图片，但是在订单后台管理里查看订单项的对应产品图片。
+
+    }
+    public void setFirstProdutImages(List<Product> products) {
+        for (Product product : products)
+            setFirstProdutImage(product);
     }
 
-    /**
-     * 设置产品中的图片属性
-     */
-    public void setFirstImgs(List<Product> productList) {
-        for (Product product : productList) {
-            setFirstImg(product);
-        }
-    }
+
+
 }
