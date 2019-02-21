@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     @Autowired
-    UserDAO userDAO;
+    private UserDAO userDAO;
 
     public Page4Navigator<User> list(int start, int size, int navigatePages) {
         Sort sort = new Sort(Sort.Direction.DESC, "id");
@@ -24,5 +24,17 @@ public class UserService {
         return new Page4Navigator<>(pageFromJPA,navigatePages);
     }
 
+    public boolean isExist(String name){
+        User user = userDAO.findByName(name);
+        return null!=user;
+    }
+
+    public void add(User user){
+        userDAO.save(user);
+    }
+
+    public User loginByNameAndPassword(String name,String password){
+        return userDAO.getByNameAndPassword(name,password);
+    }
 
 }
