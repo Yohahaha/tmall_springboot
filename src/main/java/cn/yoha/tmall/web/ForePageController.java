@@ -44,4 +44,36 @@ public class ForePageController {
     public String searchPage(){
         return "fore/search";
     }
+    @GetMapping("/buy")
+    public String buyPage(){
+        return "fore/buy";
+    }
+    @GetMapping("/cart")
+    public String cartPage(){
+        return "fore/cart";
+    }
+    @GetMapping("/alipay")
+    public String toPay(){
+        return "fore/alipay";
+    }
+    @GetMapping("/payed")
+    public String payed(){
+        return "fore/payed";
+    }
+    @GetMapping("/bought")
+    public String showOrder(){
+        return "fore/bought";
+    }
+    @GetMapping("/confirmPay")
+    public String confirmPay(){
+        return "fore/confirmPay";
+    }
+    @GetMapping("/orderConfirmed")
+    public String orderConfirmed(){
+        return "fore/orderConfirmed";
+    }
+    @GetMapping("/review")
+    public String reviewPage(){
+        return "fore/review";
+    }
 }

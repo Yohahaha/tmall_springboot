@@ -5,6 +5,7 @@ import cn.yoha.tmall.dao.OrderItemDAO;
 import cn.yoha.tmall.pojo.Order;
 import cn.yoha.tmall.pojo.OrderItem;
 import cn.yoha.tmall.pojo.Product;
+import cn.yoha.tmall.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +35,6 @@ public class OrderItemService {
         order.setTotal(total);
         order.setOrderItems(orderItems);
         order.setTotalNumber(totalNumber);
-        order.setOrderItems(orderItems);
     }
 
     public List<OrderItem> listByOrder(Order order) {
@@ -54,5 +54,21 @@ public class OrderItemService {
             }
         }
         return count;
+    }
+
+    public void delete(int oiid){
+        orderItemDAO.deleteById(oiid);
+    }
+
+    public OrderItem update(OrderItem item){
+        return orderItemDAO.save(item);
+    }
+
+    public List<OrderItem> listByUser(User user){
+        return orderItemDAO.findByUserAndOrderIsNull(user);
+    }
+
+    public OrderItem get(int id){
+        return orderItemDAO.getOne(id);
     }
 }

@@ -29,7 +29,7 @@
                     num=1;
                 $(".productNumberSetting").val(num);
             });
-
+            //添加到购物车，同时将按钮变色
             $(".addCartButton").removeAttr("disabled");
             $(".addCartLink").click(function(){
                 var url = "forecheckLogin";
@@ -85,7 +85,7 @@
                     $("div.loginErrorMessageDiv").css("visibility","visible");
                     return;
                 }
-
+                //在模态登录后重新回到之前访问的产品页面
                 axios.post(url,vue.user).then(function(response) {
                     var result = response.data;
                     if(result.code===0){

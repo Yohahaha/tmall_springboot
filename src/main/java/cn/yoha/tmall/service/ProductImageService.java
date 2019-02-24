@@ -1,6 +1,7 @@
 package cn.yoha.tmall.service;
 
 import cn.yoha.tmall.dao.ProductImageDAO;
+import cn.yoha.tmall.pojo.OrderItem;
 import cn.yoha.tmall.pojo.Product;
 import cn.yoha.tmall.pojo.ProductImage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,10 @@ public class ProductImageService   {
             setFirstProdutImage(product);
     }
 
-
+    public void setFirstProductImagesOnOrderItems(List<OrderItem> itemList){
+        for (OrderItem item : itemList){
+            setFirstProdutImage(item.getProduct());
+        }
+    }
 
 }
