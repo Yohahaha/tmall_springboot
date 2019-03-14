@@ -37,4 +37,8 @@ public class UserService {
         return userDAO.getByNameAndPassword(name,password);
     }
 
+    public User getUserByName(String username){
+        return userDAO.findByName(username);
+    }
+
 }

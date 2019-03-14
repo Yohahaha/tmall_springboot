@@ -1,6 +1,7 @@
 package cn.yoha.tmall.interceptor;
 
-import cn.yoha.tmall.pojo.User;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,9 +41,14 @@ public class LoginInterceptor implements HandlerInterceptor {
         uri = uri.substring(1);
         //判断其是否是需要拦截的uri
         if (beginWith(uri,requireAuthPages)){
-            User user =(User) session.getAttribute("user");
-            if (null==user){
-                System.out.println("----------here---------------");
+//            --------旧的验证是否登录的方式------
+//            User user =(User) session.getAttribute("user");
+//            if (null==user){
+//                response.sendRedirect("login");
+//                return false;
+//            }
+            Subject subject = SecurityUtils.getSubject();
+            if (!subject.isAuthenticated()){
                 response.sendRedirect("login");
                 return false;
             }

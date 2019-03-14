@@ -1,9 +1,9 @@
 package cn.yoha.tmall.web;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import javax.servlet.http.HttpSession;
 
 @Controller
 public class ForePageController {
@@ -28,9 +28,12 @@ public class ForePageController {
         return "fore/login";
     }
     @GetMapping("/forelogout")
-    public String logout(HttpSession session){
-        session.removeAttribute("user");
-        return "fore/home";
+    public String logout( ){
+        //旧的logout方式为删除session中的user数据
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated())
+            subject.logout();
+        return "redirect:home";
     }
     @GetMapping("/product")
     public String showProduct(){

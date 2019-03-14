@@ -4,13 +4,14 @@ import cn.yoha.tmall.service.OrderService;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "order_")
 @JsonIgnoreProperties({ "handler","hibernateLazyInitializer" })
-public class Order {
+public class Order implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

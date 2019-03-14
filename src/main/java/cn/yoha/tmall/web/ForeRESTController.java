@@ -5,6 +5,12 @@ import cn.yoha.tmall.pojo.*;
 import cn.yoha.tmall.service.*;
 import cn.yoha.tmall.util.Result;
 import org.apache.commons.lang.math.RandomUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.crypto.hash.SimpleHash;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
@@ -48,7 +54,7 @@ public class ForeRESTController {
     }
 
     /**
-     * 注册方法
+     * 注册方法，用盐值加密
      */
     @PostMapping("/foreregister")
     public Object register(@RequestBody User user) {
@@ -58,6 +64,13 @@ public class ForeRESTController {
         if (exist) {
             return Result.fail("该用户已经被注册。");
         }
+        //对密码进行加密
+        String salt = new SecureRandomNumberGenerator().nextBytes().toString();
+        int times = 2;
+        String algorithm = "md5";
+        String encodedPassword = new SimpleHash(algorithm,user.getPassword(),salt,times).toString();
+        user.setPassword(encodedPassword);
+        user.setSalt(salt);
         userService.add(user);
         return Result.success();
     }
@@ -71,14 +84,26 @@ public class ForeRESTController {
     public Object login(@RequestBody User userParam, HttpSession session) {
         String name = userParam.getName();
         name = HtmlUtils.htmlEscape(name);
-        User user = userService.loginByNameAndPassword(name, userParam.getPassword());
-        if (null != user) {
-            //登录成功，将user数据存入session
-            user.setPassword(null);
-            session.setAttribute("user", user);
+//        -------旧的登录方法---------
+//        User user = userService.loginByNameAndPassword(name, userParam.getPassword());
+//        if (null != user) {
+//            //登录成功，将user数据存入session
+//            user.setPassword(null);
+//            session.setAttribute("user", user);
+//            return Result.success();
+//        }
+
+//        -------新的登录方法-------
+        Subject subject = SecurityUtils.getSubject();
+        UsernamePasswordToken token = new UsernamePasswordToken(name,userParam.getPassword());
+        try {
+            subject.login(token);
+            User user = userService.getUserByName(name);
+            session.setAttribute("user",user);
             return Result.success();
+        } catch (AuthenticationException e) {
+            return Result.fail("账号或密码错误");
         }
-        return Result.fail("用户名或密码错误。");
     }
 
     /**
@@ -116,10 +141,14 @@ public class ForeRESTController {
      */
     @GetMapping("/forecheckLogin")
     public Object checkLogin(HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (null != user) {
+//        -----旧的检查登录方式----
+//        User user = (User) session.getAttribute("user");
+//        if (null != user) {
+//            return Result.success();
+//        }
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated())
             return Result.success();
-        }
         return Result.fail("");
     }
 

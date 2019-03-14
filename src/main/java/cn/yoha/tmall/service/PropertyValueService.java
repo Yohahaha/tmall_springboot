@@ -6,11 +6,15 @@ import cn.yoha.tmall.pojo.Product;
 import cn.yoha.tmall.pojo.Property;
 import cn.yoha.tmall.pojo.PropertyValue;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@CacheConfig(cacheNames = "propertyValues")
 public class PropertyValueService {
     @Autowired
     private PropertyValueDAO propertyValueDAO;
@@ -38,6 +42,7 @@ public class PropertyValueService {
     /**
      * 查询该产品下的所有属性值
      */
+    @Cacheable(key = "'propertyValues-pid-'+#p0.id")
     public List<PropertyValue> list(Product product) {
         return propertyValueDAO.findByProductOrderByIdDesc(product);
     }
@@ -45,6 +50,7 @@ public class PropertyValueService {
     /**
      * 更新属性值
      */
+    @CacheEvict(allEntries = true)
     public PropertyValue update(PropertyValue bean) {
         return propertyValueDAO.save(bean);
     }

@@ -26,16 +26,18 @@ public class OtherInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         HttpSession session = request.getSession();
         User user =(User) session.getAttribute("user");
-        List<OrderItem> itemList = orderItemService.listByUser(user);
         Integer cartTotalItemNumber = 0;
-        for (OrderItem item: itemList){
-            cartTotalItemNumber += item.getNumber();
+        if (user!=null){
+            //要对session中的user进行判断，否则会在下面的方法中出错
+            List<OrderItem> itemList = orderItemService.listByUser(user);
+            for (OrderItem item: itemList){
+                cartTotalItemNumber += item.getNumber();
+            }
         }
         session.setAttribute("cartTotalItemNumber",cartTotalItemNumber);
 
         List<Category> list = categoryService.list();
         request.getServletContext().setAttribute("categories_below_search",list);
         request.getServletContext().setAttribute("contextPath","/");
-
     }
 }

@@ -2,13 +2,13 @@ package cn.yoha.tmall.util;
 
 import org.springframework.data.domain.Page;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * 包装分页类，对页码显示进行的优化
- * @param <T>
  */
-public class Page4Navigator<T> {
+public class Page4Navigator<T> implements Serializable {
     private Page<T> pageFromJPA;
     //前端页码显示的数量
     private int navigatorPages;
